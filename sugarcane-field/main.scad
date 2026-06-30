@@ -1,3 +1,5 @@
+seed = 12345; // change this for a different random layout
+
 inch = 25.4;
 
 // Dimensions
@@ -8,16 +10,10 @@ height = 0.125 * inch;
 // Bevel size
 bevel = 0.06 * inch; // adjust as desired
 
-// Pony bead dimensions
-bead_diameter = 9;
-bead_height   = 5.6;
-bead_hole     = 4;
-bead_spacing  = 10;   // center-to-center
-
 // Jitter settings
 y_jitter = 2.0;   // max side-to-side movement in mm
 x_jitter = 1.0;   // max forward-to-backward movement in mm
-seed = 12345;     // change this for a different random layout
+z_jitter = 1.5;   // max vertical movement in mm
 
 module top_beveled_box(size=[10,10,10], r=1) {
     hull() {
@@ -34,6 +30,12 @@ module top_beveled_box(size=[10,10,10], r=1) {
         }
     }
 }
+
+// Pony bead dimensions
+bead_diameter = 9;
+bead_height   = 5.6;
+bead_hole     = 4;
+bead_spacing  = 10; // center-to-center
 
 module pony_bead() {
     difference() {
@@ -52,24 +54,64 @@ module pony_bead() {
     }
 }
 
+slope_height = 2.0;   // how high the mound rises
+slope_radius = 8.0;   // how far mound extends from bead center
+
+slope_height_jitter = 0.5; // max vertical variance.
+slope_radius_jitter = 1.0; // max radial variance.
+
+module bead_mound(height, radius, sx, sy, rot) {
+    rotate([0,0,rot])
+        scale([sx, sy, 1])
+            cylinder(
+                h = height,
+                r1 = radius,
+                r2 = bead_diameter / 2,
+                $fn = 64
+            );
+}
+
 union() {
     top_beveled_box([length, width, height], bevel);
 
     // Row of beads centered on the strip
-    num_beads = floor((length - bead_diameter) / bead_spacing) + 1;
+    num_beads = floor((length - bead_diameter) / bead_spacing);
     used_length = (num_beads - 1) * bead_spacing;
     start_x = (length - used_length) / 2;
     
     y_offsets = rands(-y_jitter, y_jitter, num_beads, seed);
     x_offsets = rands(-x_jitter, x_jitter, num_beads, seed);
+    z_offsets = rands(-z_jitter, 0, num_beads, seed);
+
+    slope_heights = rands(
+        slope_height - slope_height_jitter,
+        slope_height + slope_height_jitter,
+        num_beads,
+        seed + 2
+    );
+
+    slope_radii = rands(
+        slope_radius - slope_radius_jitter,
+        slope_radius + slope_radius_jitter,
+        num_beads,
+        seed + 3
+    );
+    
+    mound_scale_x = rands(0.85, 1.15, num_beads, seed + 4);
+    mound_scale_y = rands(0.85, 1.15, num_beads, seed + 5);
+    mound_rot     = rands(0, 360, num_beads, seed + 6);
 
     for (i = [0 : num_beads - 1]) {
-        translate([
-            start_x + i * bead_spacing + x_offsets[i], 
-            width / 2 + y_offsets[i], 
-            height
-        ]) {
+        x = start_x + i * bead_spacing + x_offsets[i];
+        y = width / 2 + y_offsets[i];
+
+        h = slope_heights[i];
+        r = slope_radii[i];
+
+        translate([x, y, height])
+            bead_mound(h, r, mound_scale_x[i], mound_scale_y[i], mound_rot[i]);
+
+        translate([x, y, height + z_offsets[i]])
             pony_bead();
-        }
     }
 }
