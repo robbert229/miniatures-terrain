@@ -1,8 +1,8 @@
 # Sugar Cane Field
 
-![[./main.png]]
+![./main.png](main.png)
 
-A procedurally generated sugar cane field for tabletop wargaming.
+A procedurally generated sugar cane field for tabletop wargaming. It is designed to be used as an alternative to the first two steps for the following sugarcane terrain tutorial. https://bloodandpigment.com/2024/10/14/how-to-make-sugarcane-terrain/
 
 Designed primarily for historical games set in the Caribbean during the late 17th and early 18th centuries, but equally suitable for pirate games, colonial settings, fantasy, or any scenario requiring dense crop fields.
 
