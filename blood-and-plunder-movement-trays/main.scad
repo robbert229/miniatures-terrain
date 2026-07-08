@@ -19,7 +19,7 @@ rows = [2, 1];
 
 // Tray dimensions
 floor_thickness = 1.8;
-wall_height     = 3.2;
+wall_height     = 2;
 wall_thickness  = 2.2;
 
 // Hex/brick spacing.
