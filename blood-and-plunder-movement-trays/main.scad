@@ -8,14 +8,14 @@
 base_diameter = 20.0;
 
 // Desired empty space between adjacent pockets
-gap = 2.0; // Try 1.5–3.0 mm
+gap = 3.0; // Try 1.5–3.0 mm
 
 // FDM-friendly clearance.
 // pocket diameter = base_diameter + clearance
 clearance = 0.7;
 
 // Row layout from bottom to top
-rows = [3, 2];
+rows = [2, 1];
 
 // Tray dimensions
 floor_thickness = 1.8;
@@ -49,18 +49,14 @@ tray();
 
 module tray() {
     difference() {
-        // Organic outer body
         linear_extrude(height = floor_thickness + wall_height)
-            offset(r = wall_thickness)
-                hull()
-                    pocket_layout();
+            hull()
+                outer_layout();
 
-        // Round base pockets
         translate([0, 0, floor_thickness])
             linear_extrude(height = wall_height + 0.2)
                 pocket_layout();
 
-        // Magnet recesses from underside
         if (magnet_holes) {
             translate([0, 0, -0.01])
                 linear_extrude(height = magnet_depth + 0.02)
@@ -71,37 +67,34 @@ module tray() {
 
 module pocket_layout() {
     for (row = [0 : len(rows) - 1]) {
-        row_count = rows[row];
+        for (col = [0 : rows[row] - 1]) {
+            translate(slot_pos(row, col))
+                circle(r = pocket_r);
+        }
+    }
+}
 
-        // Center each row relative to the widest row
-        row_width = (row_count - 1) * x_pitch;
-        max_width = (max(rows) - 1) * x_pitch;
-        x_offset = (max_width - row_width) / 2;
-
-        for (col = [0 : row_count - 1]) {
-            translate([
-                x_offset + col * x_pitch,
-                row * y_pitch
-            ])
-            circle(r = pocket_r);
+module outer_layout() {
+    for (row = [0 : len(rows) - 1]) {
+        for (col = [0 : rows[row] - 1]) {
+            translate(slot_pos(row, col))
+                circle(r = pocket_r + wall_thickness);
         }
     }
 }
 
 module magnet_layout() {
     for (row = [0 : len(rows) - 1]) {
-        row_count = rows[row];
-
-        row_width = (row_count - 1) * x_pitch;
-        max_width = (max(rows) - 1) * x_pitch;
-        x_offset = (max_width - row_width) / 2;
-
-        for (col = [0 : row_count - 1]) {
-            translate([
-                x_offset + col * x_pitch,
-                row * y_pitch
-            ])
-            circle(d = magnet_diameter);
+        for (col = [0 : rows[row] - 1]) {
+            translate(slot_pos(row, col))
+                circle(d = magnet_diameter);
         }
     }
 }
+
+// Always offset every other row by half a pitch
+function slot_pos(row, col) =
+    [
+        col * x_pitch + ((row % 2) * x_pitch / 2),
+        row * y_pitch
+    ];
