@@ -18,7 +18,7 @@ clearance = 0.7;
 rows = [2, 1];
 
 // Tray dimensions
-floor_thickness = 2.2;
+floor_thickness = 2.4;
 wall_height     = 2;
 wall_thickness  = 2.2;
 
