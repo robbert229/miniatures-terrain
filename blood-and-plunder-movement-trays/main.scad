@@ -18,7 +18,7 @@ clearance = 0.7;
 rows = [2, 1];
 
 // Tray dimensions
-floor_thickness = 1.8;
+floor_thickness = 2.2;
 wall_height     = 2;
 wall_thickness  = 2.2;
 
@@ -30,8 +30,8 @@ y_spacing_factor = 0.866; // sqrt(3) / 2
 
 // Optional magnet holes under each base
 magnet_holes    = true;
-magnet_diameter = 5.2;
-magnet_depth    = 1.2;
+magnet_diameter = 4.2;
+magnet_depth    = 2.1;
 
 // Render smoothness
 $fn = 96;
