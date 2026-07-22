@@ -30,7 +30,7 @@ y_spacing_factor = 0.866; // sqrt(3) / 2
 
 // Optional magnet holes under each base
 magnet_holes    = true;
-magnet_diameter = 4.2;
+magnet_diameter = 4.3;
 magnet_depth    = 2.1;
 
 // Render smoothness
